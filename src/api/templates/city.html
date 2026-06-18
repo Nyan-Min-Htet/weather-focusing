@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="my">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ weather.city_mm }} - ရာသီဥတု</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Pyidaungsu", "Myanmar Text", sans-serif;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gradient-to-br from-blue-400 via-blue-500 to-purple-600 min-h-screen"
+  >
+    <!-- Navigation -->
+    <nav class="bg-white/10 backdrop-blur-md p-4">
+      <div class="container mx-auto flex justify-between items-center">
+        <a href="/" class="text-white font-bold text-xl">🇲🇲 မြန်မာ့ ရာသီဥတု</a>
+        <a href="/" class="text-white hover:underline">← ပင်မစာမျက်နှာ</a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+      <!-- Current Weather -->
+      <div class="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+        <div class="text-center">
+          <h1 class="text-4xl font-bold text-gray-800">{{ weather.city }}</h1>
+          <p class="text-2xl text-gray-600 mb-1">{{ weather.city_mm }}</p>
+          <p class="text-sm text-gray-500 mb-6">📍 {{ weather.region }}</p>
+
+          <div class="text-9xl my-4">{{ weather.current.icon }}</div>
+
+          <div class="text-7xl font-bold text-gray-800 mb-2">
+            {{ weather.current.temperature }}°C
+          </div>
+          <p class="text-2xl text-gray-600 mb-2">
+            {{ weather.current.description_mm }}
+          </p>
+          <p class="text-lg text-gray-500">
+            {{ weather.current.description_en }}
+          </p>
+
+          <p class="text-xs text-gray-400 mt-4">
+            နောက်ဆုံး အပ်ဒိတ်: {{ weather.current.updated_at }}
+          </p>
+        </div>
+
+        <!-- Weather Details Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+          <div
+            class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl text-center"
+          >
+            <div class="text-3xl mb-2">🌡️</div>
+            <p class="text-sm text-gray-600">ခံစားရသည့်အပူချိန်</p>
+            <p class="text-2xl font-bold text-gray-800">
+              {{ weather.current.feels_like }}°C
+            </p>
+          </div>
+          <div
+            class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl text-center"
+          >
+            <div class="text-3xl mb-2">💧</div>
+            <p class="text-sm text-gray-600">စိုထိုင်းဆ</p>
+            <p class="text-2xl font-bold text-gray-800">
+              {{ weather.current.humidity }}%
+            </p>
+          </div>
+          <div
+            class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl text-center"
+          >
+            <div class="text-3xl mb-2">💨</div>
+            <p class="text-sm text-gray-600">လေတိုက်နှုန်း</p>
+            <p class="text-2xl font-bold text-gray-800">
+              {{ weather.current.wind_speed }} km/h
+            </p>
+          </div>
+          <div
+            class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl text-center"
+          >
+            <div class="text-3xl mb-2">🌧️</div>
+            <p class="text-sm text-gray-600">မိုးရွာသည်</p>
+            <p class="text-2xl font-bold text-gray-800">
+              {{ weather.current.precipitation }} mm
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7-Day Forecast -->
+      <div class="bg-white rounded-2xl shadow-2xl p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+          📅 ၇ ရက်စာ ခန့်မှန်းချက်
+        </h2>
+
+        <div class="grid grid-cols-2 md:grid-cols-7 gap-3">
+          {% for day in weather.forecast %}
+          <div
+            class="bg-gradient-to-b from-blue-50 to-white p-4 rounded-xl text-center border border-blue-100"
+          >
+            <p class="font-bold text-gray-700">{{ day.date[:10] }}</p>
+            <p class="text-xs text-gray-500 mb-2">
+              {{ day.date[8:10] }}/{{ day.date[5:7] }}
+            </p>
+            <div class="text-4xl my-2">{{ day.icon }}</div>
+            <p class="text-lg font-bold text-red-500">{{ day.temp_max }}°</p>
+            <p class="text-sm text-blue-500">{{ day.temp_min }}°</p>
+            <p class="text-xs text-gray-600 mt-2">{{ day.description_mm }}</p>
+            <p class="text-xs text-blue-600 mt-1">
+              💧 {{ day.precipitation }}mm
+            </p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Other Cities -->
+      <div class="mt-8">
+        <h3 class="text-2xl font-bold text-white mb-4">🌏 တခြားမြို့များ</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {% for c in all_cities %} {% if c.name != weather.city %}
+          <a
+            href="/city/{{ c.name }}"
+            class="bg-white/90 hover:bg-white p-3 rounded-lg text-center transition shadow"
+          >
+            <p class="font-semibold text-gray-800">{{ c.name_mm }}</p>
+            <p class="text-xs text-gray-500">{{ c.name }}</p>
+          </a>
+          {% endif %} {% endfor %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
