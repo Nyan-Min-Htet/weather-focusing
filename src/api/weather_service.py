@@ -1,10 +1,17 @@
 import httpx
 import asyncio
+import time
 from datetime import datetime
 
 class WeatherService:
     BASE_URL = "https://api.open-meteo.com/v1/forecast"
-    
+    CACHE_EXPIRY = 300  # seconds
+    _weather_cache = {}
+    _all_weather_cache = {
+        "expires": 0,
+        "data": None
+    }
+
     WEATHER_CODES = {
         0: ("ကြည်လင်", "Clear sky", "☀️"),
         1: ("အများအားဖြင့် ကြည်လင်", "Mainly clear", "🌤️"),
@@ -30,8 +37,14 @@ class WeatherService:
     }
     
     @staticmethod
-    async def get_weather(lat, lon):
-        """Get weather from Open-Meteo - Python 3.13 compatible"""
+    def get_weather(lat, lon):
+        """Get weather from Open-Meteo"""
+        cache_key = f"{lat},{lon}"
+        now = time.time()
+        cached = WeatherService._weather_cache.get(cache_key)
+        if cached and now < cached[0]:
+            return cached[1]
+
         params = {
             "latitude": lat,
             "longitude": lon,
@@ -40,12 +53,14 @@ class WeatherService:
             "timezone": "Asia/Yangon",
             "forecast_days": 7
         }
-        
-        # httpx 0.28+ uses AsyncClient context manager properly
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get(WeatherService.BASE_URL, params=params)
+
+        timeout = httpx.Timeout(10.0, connect=5.0, read=10.0)
+        with httpx.Client(timeout=timeout) as client:
+            response = client.get(WeatherService.BASE_URL, params=params)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            WeatherService._weather_cache[cache_key] = (now + WeatherService.CACHE_EXPIRY, data)
+            return data
     
     @staticmethod
     def get_weather_info(code):
