@@ -5,6 +5,7 @@ from datetime import datetime
 
 class WeatherService:
     BASE_URL = "https://api.open-meteo.com/v1/forecast"
+    _all_weather_cache = {"data": None, "expires": 0}
     CACHE_EXPIRY = 300  # seconds
     _weather_cache = {}
     _all_weather_cache = {

@@ -5,14 +5,14 @@ import os
 import sys
 import time
 
-# Add src to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+# Add src to path for imports (works both local & Vercel)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from weather_service import WeatherService
 import cities
 
-# Template folder (relative to src/api/)
-TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), '..', 'templates')
+# api/index.py → ../src/templates/
+TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), '..', 'src', 'templates')
 print(f"Templates directory: {TEMPLATE_DIR}")
 print(f"Exists: {os.path.exists(TEMPLATE_DIR)}")
 
@@ -139,6 +139,19 @@ def api_all_weather():
         return jsonify({"error": str(e)}), 500
 
 
+# ============================================
+# ✨ NEW: Vercel Handler (for serverless)
+# ============================================
+# Vercel Python runtime uses this
+def handler(request, context=None):
+    def start_response(status, headers, exc_info=None):
+        def write(body):
+            return None
+        return write
+
+    return app(request.environ, start_response)
+
+
 # For local development
 if __name__ == '__main__':
     import socket
@@ -175,5 +188,3 @@ if __name__ == '__main__':
     else:
         print("❌ No available ports found")
         sys.exit(1)
-
-
