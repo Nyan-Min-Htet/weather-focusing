@@ -5,11 +5,11 @@ import os
 import sys
 import time
 
-# Add src to path for imports (works both local & Vercel)
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+# Add project root and src directories to path for imports (works both local & Vercel)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src', 'api'))
 
-from weather_service import WeatherService
-import cities
+from weather_service import WeatherService # type: ignore
+import cities # type: ignore
 
 # api/index.py → ../src/templates/
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), '..', 'src', 'templates')
