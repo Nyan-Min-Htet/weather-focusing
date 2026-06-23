@@ -103,28 +103,30 @@
 
 myanmar-weather/
 │
-├── 📁 api/
-│ └── 🐍 index.py
+├── api/
+│ └── index.py # ⚡ Vercel entry point (Flask app)
 │
-├── 📁 src/
-│ ├── 📁 api/
-│ │ ├── 🐍 **init**.py
-│ │ ├── 🐍 cities.py
-│ │ └── 🐍 weather_service.py
+├── src/
+│ ├── api/
+│ │ ├── **init**.py # 📦 Python package marker
+│ │ ├── cities.py # 🏙️ Myanmar cities data + helpers
+│ │ └── weather_service.py # 🌦️ Weather API logic + caching
 │ │
-│ └── 📁 templates/
-│ ├── 🌐 index.html
-│ └── 🌐 city.html
+│ └── templates/
+│ ├── base.html # 🎨 Base layout (CSS + common JS)
+│ ├── index.html # 🏠 Homepage (dashboard)
+│ └── city.html # 📍 City detail page
 │
-├── 📁 screenshots/
-│ ├── 🖼️ homepage.png
-│ ├── 🖼️ city-detail.png
-│ └── 🖼️ mobile.png
+├── screenshots/ # 📸 Optional: README images
+│ ├── homepage.png
+│ ├── city-detail.png
+│ └── mobile.png
 │
-├── 📄 .gitignore
-├── 📄 README.md
-├── 📄 requirements.txt
-└── ⚙️ vercel.json
+├── .gitignore # 🚫 Git ignore rules
+├── LICENSE # 📄 MIT License
+├── README.md # 📖 Project documentation
+├── requirements.txt # 📦 Python dependencies
+└── vercel.json # ⚙️ Vercel deployment config
 
 ---
 
