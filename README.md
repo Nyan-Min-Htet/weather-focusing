@@ -101,6 +101,7 @@
 
 ## 📂 Project Structure
 
+```
 myanmar-weather/
 │
 ├── api/
@@ -127,6 +128,8 @@ myanmar-weather/
 ├── README.md # 📖 Project documentation
 ├── requirements.txt # 📦 Python dependencies
 └── vercel.json # ⚙️ Vercel deployment config
+
+```
 
 ---
 
