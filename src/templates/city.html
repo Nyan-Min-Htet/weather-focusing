@@ -209,6 +209,64 @@
           opacity: 0.7;
         }
       }
+      /* Wind Pattern Styles */
+      .wind-section {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      }
+
+      .wind-compass {
+        position: relative;
+        width: 280px;
+        height: 280px;
+        margin: 0 auto;
+      }
+
+      .wind-rose-bar {
+        position: absolute;
+        background: linear-gradient(to top, #3b82f6, #93c5fd);
+        border-radius: 4px;
+        transition: all 0.3s;
+      }
+
+      .wind-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        text-align: center;
+      }
+
+      .wind-hour-item {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s;
+      }
+
+      .wind-hour-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .wind-arrow {
+        font-size: 1.5rem;
+        display: inline-block;
+      }
+
+      @keyframes windRotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .wind-animated-arrow {
+        animation: windRotate 4s linear infinite;
+      }
     </style>
   </head>
   <body
@@ -465,6 +523,253 @@
         </div>
       </div>
 
+      <!-- 💨 Hourly Wind Patterns Section -->
+      <div class="card wind-section mb-6">
+        <h2
+          class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2"
+        >
+          <span>💨</span>
+          <span>လေတိုက်ခြင်း ပုံစံ (၂၄ နာရီ)</span>
+          <span class="text-sm font-normal text-gray-600 ml-2">
+            Hourly Wind Patterns
+          </span>
+        </h2>
+
+        <!-- Wind Summary Cards -->
+        {% if weather.wind_summary %}
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <div class="wind-card">
+            <p class="text-xs text-gray-600 mb-1">အမြင့်ဆုံး</p>
+            <p class="text-2xl font-bold text-red-500">
+              {{ weather.wind_summary.max_speed }}
+            </p>
+            <p class="text-xs text-gray-500">km/h</p>
+          </div>
+          <div class="wind-card">
+            <p class="text-xs text-gray-600 mb-1">ပျမ်းမျှ</p>
+            <p class="text-2xl font-bold text-blue-500">
+              {{ weather.wind_summary.avg_speed }}
+            </p>
+            <p class="text-xs text-gray-500">km/h</p>
+          </div>
+          <div class="wind-card">
+            <p class="text-xs text-gray-600 mb-1">အနိမ့်ဆုံး</p>
+            <p class="text-2xl font-bold text-green-500">
+              {{ weather.wind_summary.min_speed }}
+            </p>
+            <p class="text-xs text-gray-500">km/h</p>
+          </div>
+          <div class="wind-card">
+            <p class="text-xs text-gray-600 mb-1">လေပြင်း</p>
+            <p class="text-2xl font-bold text-orange-500">
+              {{ weather.wind_summary.max_gust }}
+            </p>
+            <p class="text-xs text-gray-500">km/h</p>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Wind Compass + Chart -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <!-- Wind Compass -->
+          <div class="wind-card">
+            <h3 class="font-bold text-lg mb-3 text-gray-800">🧭 လေဦးတည်ရာ</h3>
+            <p class="text-xs text-gray-600 mb-3">Wind Direction</p>
+
+            <div class="wind-compass">
+              <!-- Compass background -->
+              <div
+                style="
+                  position: absolute;
+                  inset: 0;
+                  border-radius: 50%;
+                  background: radial-gradient(circle, #dbeafe 0%, #bfdbfe 100%);
+                  border: 3px solid #3b82f6;
+                "
+              ></div>
+
+              <!-- Direction labels -->
+              <div
+                style="
+                  position: absolute;
+                  top: 10px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  font-weight: bold;
+                  color: #1e40af;
+                "
+              >
+                N
+              </div>
+              <div
+                style="
+                  position: absolute;
+                  bottom: 10px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  font-weight: bold;
+                  color: #1e40af;
+                "
+              >
+                S
+              </div>
+              <div
+                style="
+                  position: absolute;
+                  left: 10px;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  font-weight: bold;
+                  color: #1e40af;
+                "
+              >
+                W
+              </div>
+              <div
+                style="
+                  position: absolute;
+                  right: 10px;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  font-weight: bold;
+                  color: #1e40af;
+                "
+              >
+                E
+              </div>
+
+              <!-- Center info -->
+              <div
+                style="
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  text-align: center;
+                  z-index: 2;
+                "
+              >
+                <div
+                  class="wind-arrow wind-animated-arrow"
+                  style="font-size: 3rem; color: #dc2626"
+                >
+                  {{ weather.wind_hourly[0].direction_arrow if
+                  weather.wind_hourly else '↓' }}
+                </div>
+                <p class="text-sm font-bold mt-2">
+                  {{ weather.wind_hourly[0].speed if weather.wind_hourly else 0
+                  }} km/h
+                </p>
+                <p class="text-xs text-gray-600">
+                  {{ weather.wind_hourly[0].direction_text if
+                  weather.wind_hourly else 'N/A' }}
+                </p>
+              </div>
+
+              <!-- Degree markers -->
+              {% for deg in [0, 45, 90, 135, 180, 225, 270, 315] %} {% set angle
+              = deg %} {% set radius = 110 %} {% set x = 140 + radius * 0.85 *
+              (1 if deg in [90] else (-1 if deg in [270] else 0)) %} {% set y =
+              140 - radius * 0.85 * (1 if deg in [0] else (-1 if deg in [180]
+              else 0)) %} {% endfor %}
+            </div>
+
+            <p class="text-xs text-gray-500 mt-3 text-center">
+              {{ weather.wind_summary.dominant_direction if weather.wind_summary
+              else 'N/A' }} ဘက်မှ အဓိက တိုက်နေသည်
+            </p>
+          </div>
+
+          <!-- 24-Hour Speed Chart (Canvas) -->
+          <!-- Wind Chart - 24 Hour -->
+          <div class="wind-card">
+            <h3 class="font-bold text-lg mb-3 text-gray-800">
+              📊 ၂၄ နာရီ လေနှုန်း ဂရပ် (Live)
+            </h3>
+            <p class="text-xs text-gray-600 mb-3">
+              24-Hour Wind Speed
+              <span
+                id="liveBadge"
+                class="ml-2 inline-flex items-center gap-1 text-green-600 font-semibold"
+              >
+                <span
+                  class="w-2 h-2 bg-green-500 rounded-full animate-pulse"
+                ></span>
+                LIVE
+              </span>
+            </p>
+
+            <!-- ✨ Container with explicit dimensions -->
+            <div style="position: relative; height: 300px; width: 100%">
+              <canvas id="windChart"></canvas>
+            </div>
+
+            <p class="text-xs text-gray-500 mt-2 text-center" id="updateInfo">
+              စက္ကန့် 30 လျှင် update
+            </p>
+          </div>
+        </div>
+
+        <!-- Hourly List -->
+        <div class="wind-card">
+          <h3 class="font-bold text-lg mb-3 text-gray-800">
+            ⏰ နာရီအလိုက် လေတိုက်ခြင်း စာရင်း
+          </h3>
+          <p class="text-xs text-gray-600 mb-3">Hourly Wind Details</p>
+
+          <div
+            class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2"
+          >
+            {% for hour in weather.wind_hourly[:24] %}
+            <div class="wind-hour-item">
+              <p class="text-xs text-gray-500">{{ hour.time.split('T')[1] }}</p>
+              <div class="wind-arrow" style="color: #2563eb">
+                {{ hour.direction_arrow }}
+              </div>
+              <p class="text-sm font-bold text-gray-800">{{ hour.speed }}</p>
+              <p class="text-xs text-gray-500">km/h</p>
+              <p class="text-xs" style="color: {{ hour.category[2] }}">
+                {{ hour.category[0] }}
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Wind Categories Legend -->
+        <div class="mt-4 p-4 bg-white rounded-lg">
+          <h4 class="font-bold text-sm mb-2 text-gray-700">
+            လေတိုက်နှုန်း အမျိုးအစားများ / Wind Categories
+          </h4>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+            <div class="flex items-center gap-2">
+              <span style="color: #94a3b8">●</span>
+              <span>လေပြင်း (Calm) - < 1 km/h</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span style="color: #86efac">●</span>
+              <span>လေအေး (Light) - 1-5 km/h</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span style="color: #fde047">●</span>
+              <span>လေသင့် (Moderate) - 6-11 km/h</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span style="color: #fb923c">●</span>
+              <span>လေပြင်း (Fresh) - 12-19 km/h</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span style="color: #ef4444">●</span>
+              <span>လေပြင်းထန် (Strong) - 20-28 km/h</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span style="color: #a855f7">●</span>
+              <span>မုန်တိုင်း (Gale) - 29+ km/h</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 7-Day Forecast with Sunrise/Sunset -->
       <div class="card mb-8">
         <h2
@@ -611,6 +916,166 @@
           });
           document.getElementById('currentTime').textContent = timeStr;
       }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+      let windChart = null;
+      const cityName = "{{ weather.city }}";
+
+      function createWindChart(data) {
+          const ctx = document.getElementById('windChart').getContext('2d');
+
+          // Calculate dynamic Y-axis max
+          const allValues = [...data.map(h => h.speed), ...data.map(h => h.gusts)];
+          const maxVal = Math.max(...allValues, 5);
+          const yMax = Math.ceil(maxVal / 5) * 5;
+
+          windChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: data.map(h => h.time.split('T')[1]),
+                  datasets: [
+                      {
+                          label: 'လေနှုန်း (km/h)',
+                          data: data.map(h => h.speed),
+                          borderColor: '#3b82f6',
+                          backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                          borderWidth: 3,
+                          fill: true,
+                          tension: 0.4,
+                          pointRadius: 4,
+                          pointHoverRadius: 7,
+                          pointBackgroundColor: '#3b82f6'
+                      },
+                      {
+                          label: 'လေပြင်း (km/h)',
+                          data: data.map(h => h.gusts),
+                          borderColor: '#ef4444',
+                          backgroundColor: 'transparent',
+                          borderWidth: 2,
+                          borderDash: [5, 5],
+                          fill: false,
+                          tension: 0.4,
+                          pointRadius: 3,
+                          pointBackgroundColor: '#ef4444'
+                      }
+                  ]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,  // ← Important!
+                  animation: {
+                      duration: 750
+                  },
+                  plugins: {
+                      legend: {
+                          position: 'top',
+                          labels: {
+                              font: { size: 12 },
+                              padding: 10
+                          }
+                      },
+                      tooltip: {
+                          mode: 'index',
+                          intersect: false
+                      }
+                  },
+                  scales: {
+                      y: {
+                          beginAtZero: true,
+                          max: yMax + 5,  // Add padding
+                          title: {
+                              display: true,
+                              text: 'လေနှုန်း (km/h)'
+                          },
+                          ticks: {
+                              stepSize: Math.ceil(yMax / 5)
+                          }
+                      },
+                      x: {
+                          title: {
+                              display: true,
+                              text: 'အချိန်'
+                          },
+                          grid: {
+                              display: false
+                          }
+                      }
+                  }
+              }
+          });
+      }
+
+      function updateWindChart(data) {
+          if (!windChart) return;
+
+          // Recalculate max
+          const allValues = [...data.map(h => h.speed), ...data.map(h => h.gusts)];
+          const maxVal = Math.max(...allValues, 5);
+          const yMax = Math.ceil(maxVal / 5) * 5;
+
+          windChart.data.labels = data.map(h => h.time.split('T')[1]);
+          windChart.data.datasets[0].data = data.map(h => h.speed);
+          windChart.data.datasets[1].data = data.map(h => h.gusts);
+          windChart.options.scales.y.max = yMax + 5;
+
+          windChart.update();
+      }
+
+      async function fetchWindData() {
+          try {
+              const response = await fetch(`/api/weather?city=${encodeURIComponent(cityName)}`);
+
+              if (!response.ok) throw new Error('API error');
+
+              const data = await response.json();
+
+              if (data.wind_hourly && data.wind_hourly.length > 0) {
+                  updateWindChart(data.wind_hourly.slice(0, 24));
+                  updateBadge('live');
+              }
+          } catch (error) {
+              console.log('Update failed:', error);
+              updateBadge('offline');
+          }
+      }
+
+      function updateBadge(status) {
+          const badge = document.getElementById('liveBadge');
+          if (!badge) return;
+
+          if (status === 'live') {
+              badge.innerHTML = '<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> LIVE';
+              badge.className = 'ml-2 inline-flex items-center gap-1 text-green-600 font-semibold';
+          } else {
+              badge.innerHTML = '<span class="w-2 h-2 bg-red-500 rounded-full"></span> OFFLINE';
+              badge.className = 'ml-2 inline-flex items-center gap-1 text-red-600 font-semibold';
+          }
+      }
+
+      // Initialize
+      document.addEventListener('DOMContentLoaded', function() {
+          const initialData = {{ weather.wind_hourly[:24] | tojson }};
+
+          if (initialData && initialData.length > 0) {
+              console.log('Wind data:', initialData);
+              createWindChart(initialData);
+
+              // Auto-refresh every 30 seconds
+              setInterval(fetchWindData, 30000);
+
+              // Refresh on tab visibility
+              document.addEventListener('visibilitychange', () => {
+                  if (!document.hidden) {
+                      fetchWindData();
+                  }
+              });
+          } else {
+              console.log('No wind data available');
+              document.getElementById('windChart').parentElement.innerHTML =
+                  '<p class="text-center text-gray-500 py-12">လေဒေတာ မရရှိပါ။</p>';
+          }
+      });
     </script>
   </body>
 </html>

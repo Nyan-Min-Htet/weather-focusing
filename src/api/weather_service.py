@@ -1,3 +1,6 @@
+from turtle import degrees
+from unittest import result
+
 import httpx
 import time
 from datetime import datetime
@@ -50,6 +53,7 @@ class WeatherService:
             "longitude": lon,
             "current": "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m",
             "daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,sunrise,sunset",
+            "hourly": "wind_speed_10m,wind_direction_10m,wind_gusts_10m",
             "timezone": "Asia/Yangon",
             "forecast_days": 7
         }
@@ -70,6 +74,7 @@ class WeatherService:
     def format_response(city_info, weather_data):
         current = weather_data.get("current", {})
         daily = weather_data.get("daily", {})
+        hourly = weather_data.get("hourly", {})
         
         weather_code = current.get("weather_code", 0)
         desc_mm, desc_en, icon = WeatherService.get_weather_info(weather_code)
@@ -91,7 +96,8 @@ class WeatherService:
                 "icon": icon,
                 "updated_at": current.get("time", "")
             },
-            "forecast": []
+            "forecast": [],
+            "wind_hourly": []
         }
         
         if daily and "time" in daily:
@@ -111,9 +117,87 @@ class WeatherService:
                     "description_en": fc_desc_en,
                     "icon": fc_icon
                 })
-                
+        if hourly and "time" in hourly:
+            times = hourly["time"]
+            wind_speeds = hourly.get("wind_speed_10m", [])
+            wind_dirs = hourly.get("wind_direction_10m", [])
+            wind_gusts = hourly.get("wind_gusts_10m", [])
+        
+            # Only take next 24 hours
+            for i in range(min(24, len(times))):
+                speed = wind_speeds[i] if i < len(wind_speeds) else 0
+                direction = wind_dirs[i] if i < len(wind_dirs) else 0
+                gusts = wind_gusts[i] if i < len(wind_gusts) else 0
+            
+                result["wind_hourly"].append({
+                    "time": times[i],
+                    "speed": round(speed, 1),
+                    "direction": int(direction),
+                    "gusts": round(gusts, 1),
+                    "direction_text": WeatherService.get_wind_direction(direction),
+                    "direction_arrow": WeatherService.get_wind_arrow(direction),
+                    "category": WeatherService.get_wind_category(speed)
+                })
+            # Calculate wind summary
+            if result["wind_hourly"]:
+                speeds = [h["speed"] for h in result["wind_hourly"]]
+                result["wind_summary"] = {
+                    "max_speed": max(speeds),
+                    "min_speed": min(speeds),
+                    "avg_speed": round(sum(speeds) / len(speeds), 1),
+                    "max_gust": max(h["gusts"] for h in result["wind_hourly"]),
+                    "dominant_direction": WeatherService.get_dominant_direction(result["wind_hourly"])
+                }
+            else:
+                result["wind_summary"] = {}    
         return result
 
+    @staticmethod
+    def get_wind_direction(degrees):
+            """Convert wind degrees to compass direction text"""
+            directions = [
+                "မြောက်", "အရှေ့မြောက်", "အရှေ့", "အရှေ့တောင်",
+                "တောင်", "အနောက်တောင်", "အနောက်", "အနောက်မြောက်"
+            ]
+            directions_en = [
+                "N", "NE", "E", "SE", "S", "SW", "W", "NW"
+            ]
+            idx = int((degrees + 22.5) / 45) % 8
+            return f"{directions[idx]} ({directions_en[idx]})"
+
+    @staticmethod
+    def get_wind_arrow(degrees):
+        """Convert wind degrees to arrow direction"""
+        arrows = ["↓", "↙", "←", "↖", "↑", "↗", "→", "↘"]
+        idx = int((degrees + 22.5) / 45) % 8
+        return arrows[idx]
+
+    @staticmethod
+    def get_wind_category(speed):
+        """Categorize wind speed"""
+        if speed < 1:
+            return "လေပြင်း", "Calm", "#94a3b8"  # slate-400
+        elif speed < 6:
+            return "လေအေး", "Light", "#86efac"  # green-300
+        elif speed < 12:
+            return "လေသင့်", "Moderate", "#fde047"  # yellow-300
+        elif speed < 20:
+            return "လေပြင်း", "Fresh", "#fb923c"  # orange-400
+        elif speed < 29:
+            return "လေပြင်းထန်", "Strong", "#ef4444"  # red-500
+        else:
+            return "မုန်တိုင်း", "Gale", "#a855f7"  # purple-500
+
+    @staticmethod
+    def get_dominant_direction(hourly_data):
+        """Get most common wind direction"""
+        from collections import Counter
+        directions = [h["direction_text"].split(" ")[1] for h in hourly_data]
+        if not directions:
+            return "N/A"
+        most_common = Counter(directions).most_common(1)[0][0]
+        return most_common
+    
     @staticmethod
     def get_moon_phase(date):
         """Simple moon phase calculation"""
