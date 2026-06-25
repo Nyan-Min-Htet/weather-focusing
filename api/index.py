@@ -64,30 +64,55 @@ def api_weather():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route('/city/<city_name>')
 def city_page(city_name):
-    """Dynamic city page"""
     city_info = cities.find_city(city_name)
-
+    
     if not city_info:
         return "မြို့ မတွေ့ပါ", 404
-
+    
     try:
         weather_data = WeatherService.get_weather(
-            city_info["lat"],
+            city_info["lat"], 
             city_info["lon"]
         )
         weather = WeatherService.format_response(city_info, weather_data)
         all_cities = cities.MYANMAR_CITIES
-
+        
+        # ✨ Moon Phase - MAKE SURE THIS WORKS
+        from datetime import datetime, timedelta
+        today = datetime.now()
+        
+        # Get today's moon phase
+        moon_emoji, moon_mm, moon_en = WeatherService.get_moon_phase(today)
+        
+        # Get 7-day moon phases
+        moon_phases = []
+        for i in range(7):
+            date = today + timedelta(days=i)
+            emoji, mm, en = WeatherService.get_moon_phase(date)
+            moon_phases.append({
+                'date': date.strftime('%Y-%m-%d'),
+                'emoji': emoji,
+                'mm': mm,
+                'en': en
+            })
+        
+        # ✨ DEBUG: Print to verify
+        # print(f"Today's moon: {moon_emoji} {moon_mm} {moon_en}")
+        # print(f"7-day moon phases: {moon_phases}")
+        
         return render_template('city.html',
                              city=city_info,
                              weather=weather,
-                             all_cities=all_cities)
+                             all_cities=all_cities,
+                             moon_emoji=moon_emoji,
+                             moon_mm=moon_mm,
+                             moon_en=moon_en,
+                             moon_phases=moon_phases)
     except Exception as e:
+        print(f"Error: {e}")
         return f"Error: {str(e)}", 500
-
 
 @app.route('/api/all-weather')
 def api_all_weather():

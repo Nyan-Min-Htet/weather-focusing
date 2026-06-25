@@ -4,10 +4,210 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ weather.city_mm }} - ရာသီဥတု</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       body {
-        font-family: "Pyidaungsu", "Myanmar Text", sans-serif;
+        font-family:
+          "Pyidaungsu", "Myanmar Text", "Noto Sans Myanmar", sans-serif;
+      }
+
+      .card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .forecast-card {
+        background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+        border: 1px solid #dbeafe;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .temperature-max {
+        color: #ef4444;
+        font-weight: bold;
+      }
+      .temperature-min {
+        color: #3b82f6;
+        font-weight: bold;
+      }
+
+      .weather-icon {
+        font-size: 4rem;
+      }
+
+      .sunrise-card {
+        background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+        border: 1px solid #fdba74;
+      }
+
+      .day-card {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border: 1px solid #fbbf24;
+      }
+
+      .sunset-card {
+        background: linear-gradient(135deg, #f3e8ff 0%, #c4b5fd 100%);
+        border: 1px solid #a78bfa;
+      }
+      /* Moon Phase Styles */
+      .moon-section {
+        background: linear-gradient(
+          135deg,
+          #0f172a 0%,
+          #1e293b 50%,
+          #312e81 100%
+        );
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .moon-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        padding: 2rem;
+      }
+
+      .moon-big-icon {
+        font-size: 8rem !important; /* Force big size */
+        display: block;
+        margin: 0 auto;
+        text-align: center;
+        line-height: 1;
+        filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.5));
+        animation: moonGlow 3s ease-in-out infinite;
+      }
+
+      @keyframes moonGlow {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
+          transform: scale(1);
+        }
+        50% {
+          filter: drop-shadow(0 0 35px rgba(255, 255, 255, 0.7));
+          transform: scale(1.08);
+        }
+      }
+
+      .moon-name-mm {
+        font-size: 2rem !important;
+        font-weight: bold;
+        color: #fef3c7;
+        text-align: center;
+        margin: 1rem 0 0.5rem;
+      }
+
+      .moon-name-en {
+        font-size: 1rem;
+        color: #cbd5e1;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+
+      .moon-info-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .moon-info-label {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-bottom: 0.25rem;
+      }
+
+      .moon-info-text {
+        font-size: 0.875rem;
+        color: #e2e8f0;
+        line-height: 1.5;
+      }
+
+      .moon-day-card {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 0.75rem;
+        padding: 0.75rem 0.5rem;
+        text-align: center;
+        transition: all 0.3s;
+      }
+
+      .moon-day-card:hover {
+        background: rgba(30, 41, 59, 0.9);
+        transform: translateY(-2px);
+      }
+
+      .moon-day-emoji {
+        font-size: 2.5rem !important;
+        display: block;
+        margin: 0.5rem 0;
+        line-height: 1;
+      }
+
+      .moon-day-name {
+        font-size: 0.75rem;
+        color: #cbd5e1;
+        font-weight: bold;
+      }
+
+      .moon-day-date {
+        font-size: 0.625rem;
+        color: #94a3b8;
+        margin: 0.25rem 0;
+      }
+
+      .moon-day-mm {
+        font-size: 0.7rem;
+        color: #fef3c7;
+        margin-top: 0.25rem;
+      }
+
+      .stars-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image:
+          radial-gradient(2px 2px at 20% 30%, white, transparent),
+          radial-gradient(1px 1px at 60% 70%, white, transparent),
+          radial-gradient(1px 1px at 80% 10%, white, transparent),
+          radial-gradient(2px 2px at 40% 80%, white, transparent),
+          radial-gradient(1px 1px at 90% 50%, white, transparent),
+          radial-gradient(1px 1px at 15% 60%, white, transparent),
+          radial-gradient(2px 2px at 75% 40%, white, transparent);
+        background-size: 300% 300%;
+        opacity: 0.4;
+        animation: twinkle 5s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.7;
+        }
       }
     </style>
   </head>
@@ -16,121 +216,401 @@
   >
     <!-- Navigation -->
     <nav class="bg-white/10 backdrop-blur-md p-4">
-      <div class="container mx-auto flex justify-between items-center">
-        <a href="/" class="text-white font-bold text-xl">🇲🇲 မြန်မာ့ ရာသီဥတု</a>
-        <a href="/" class="text-white hover:underline">← ပင်မစာမျက်နှာ</a>
+      <div class="container mx-auto px-4 flex justify-between items-center">
+        <a
+          href="/"
+          class="text-white font-bold text-xl flex items-center gap-2"
+        >
+          <span class="text-2xl">🇲🇲</span>
+          <span>မြန်မာ့ ရာသီဥတု</span>
+        </a>
+        <a href="/" class="text-white hover:underline flex items-center gap-1">
+          <span>←</span>
+          <span>ပင်မစာမျက်နှာ</span>
+        </a>
       </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container mx-auto px-4 py-8 max-w-5xl">
       <!-- Current Weather -->
-      <div class="bg-white rounded-2xl shadow-2xl p-8 mb-6">
-        <div class="text-center">
-          <h1 class="text-4xl font-bold text-gray-800">{{ weather.city }}</h1>
-          <p class="text-2xl text-gray-600 mb-1">{{ weather.city_mm }}</p>
-          <p class="text-sm text-gray-500 mb-6">📍 {{ weather.region }}</p>
+      <div class="card mb-6 text-center">
+        <h1 class="text-4xl font-bold text-gray-800">{{ weather.city }}</h1>
+        <p class="text-2xl text-gray-600 mb-1">{{ weather.city_mm }}</p>
+        <p
+          class="text-sm text-gray-500 mb-6 flex items-center justify-center gap-2"
+        >
+          <span>📍</span>
+          <span>{{ weather.region }}</span>
+        </p>
 
-          <div class="text-9xl my-4">{{ weather.current.icon }}</div>
+        <div class="weather-icon my-4">{{ weather.current.icon }}</div>
 
-          <div class="text-7xl font-bold text-gray-800 mb-2">
-            {{ weather.current.temperature }}°C
-          </div>
-          <p class="text-2xl text-gray-600 mb-2">
-            {{ weather.current.description_mm }}
-          </p>
-          <p class="text-lg text-gray-500">
-            {{ weather.current.description_en }}
-          </p>
+        <div class="text-7xl font-bold text-gray-800 mb-2">
+          {{ weather.current.temperature }}°C
+        </div>
+        <p class="text-2xl text-gray-600 mb-2">
+          {{ weather.current.description_mm }}
+        </p>
+        <p class="text-lg text-gray-500">
+          {{ weather.current.description_en }}
+        </p>
 
-          <p class="text-xs text-gray-400 mt-4">
-            နောက်ဆုံး အပ်ဒိတ်: {{ weather.current.updated_at }}
+        <p class="text-xs text-gray-400 mt-4">
+          နောက်ဆုံး အပ်ဒိတ်: {{ weather.current.updated_at }}
+        </p>
+      </div>
+
+      <!-- Weather Stats Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div
+          class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl text-center"
+        >
+          <div class="text-3xl mb-2">🌡️</div>
+          <p class="text-sm text-gray-600">ခံစားရသည့်အပူချိန်</p>
+          <p class="text-2xl font-bold text-gray-800">
+            {{ weather.current.feels_like }}°C
           </p>
         </div>
+        <div
+          class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl text-center"
+        >
+          <div class="text-3xl mb-2">💧</div>
+          <p class="text-sm text-gray-600">စိုထိုင်းဆ</p>
+          <p class="text-2xl font-bold text-gray-800">
+            {{ weather.current.humidity }}%
+          </p>
+        </div>
+        <div
+          class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl text-center"
+        >
+          <div class="text-3xl mb-2">💨</div>
+          <p class="text-sm text-gray-600">လေတိုက်နှုန်း</p>
+          <p class="text-2xl font-bold text-gray-800">
+            {{ weather.current.wind_speed }} km/h
+          </p>
+        </div>
+        <div
+          class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl text-center"
+        >
+          <div class="text-3xl mb-2">🌧️</div>
+          <p class="text-sm text-gray-600">မိုးရွာသည်</p>
+          <p class="text-2xl font-bold text-gray-800">
+            {{ weather.current.precipitation }} mm
+          </p>
+        </div>
+      </div>
 
-        <!-- Weather Details Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-          <div
-            class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl text-center"
-          >
-            <div class="text-3xl mb-2">🌡️</div>
-            <p class="text-sm text-gray-600">ခံစားရသည့်အပူချိန်</p>
-            <p class="text-2xl font-bold text-gray-800">
-              {{ weather.current.feels_like }}°C
-            </p>
+      <!-- 🌅 NEW: Sunrise/Sunset Section -->
+      <div class="card mb-6">
+        <h2
+          class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2"
+        >
+          <span>🌅</span>
+          <span>နေထွက်ချိန် / Sunrise & Sunset</span>
+        </h2>
+
+        {% if weather.forecast and weather.forecast|length > 0 %} {% set today =
+        weather.forecast[0] %} {% set sunrise_time = today.sunrise.split('T')[1]
+        if today.sunrise else 'N/A' %} {% set sunset_time =
+        today.sunset.split('T')[1] if today.sunset else 'N/A' %}
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Sunrise -->
+          <div class="sunrise-card p-6 rounded-xl text-center">
+            <div class="text-5xl mb-2">🌅</div>
+            <p class="text-sm text-gray-700 mb-2 font-semibold">နေထွက်ချိန်</p>
+            <p class="text-xs text-gray-600 mb-2">Sunrise</p>
+            <p class="text-3xl font-bold text-orange-700">{{ sunrise_time }}</p>
           </div>
-          <div
-            class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl text-center"
-          >
-            <div class="text-3xl mb-2">💧</div>
-            <p class="text-sm text-gray-600">စိုထိုင်းဆ</p>
-            <p class="text-2xl font-bold text-gray-800">
-              {{ weather.current.humidity }}%
+
+          <!-- Day Length -->
+          <div class="day-card p-6 rounded-xl text-center">
+            <div class="text-5xl mb-2">☀️</div>
+            <p class="text-sm text-gray-700 mb-2 font-semibold">နေ့အလျှား</p>
+            <p class="text-xs text-gray-600 mb-2">Day Length</p>
+            <p class="text-3xl font-bold text-gray-800" id="dayLength">
+              Calculating...
             </p>
+            <p class="text-xs text-gray-600 mt-2" id="dayLengthText"></p>
           </div>
-          <div
-            class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl text-center"
-          >
-            <div class="text-3xl mb-2">💨</div>
-            <p class="text-sm text-gray-600">လေတိုက်နှုန်း</p>
-            <p class="text-2xl font-bold text-gray-800">
-              {{ weather.current.wind_speed }} km/h
-            </p>
+
+          <!-- Sunset -->
+          <div class="sunset-card p-6 rounded-xl text-center">
+            <div class="text-5xl mb-2">🌇</div>
+            <p class="text-sm text-gray-700 mb-2 font-semibold">နေဝင်ချိန်</p>
+            <p class="text-xs text-gray-600 mb-2">Sunset</p>
+            <p class="text-3xl font-bold text-purple-700">{{ sunset_time }}</p>
           </div>
+        </div>
+
+        <!-- Sun Timeline -->
+        <div class="mt-8 px-4">
+          <p class="text-sm text-gray-600 mb-3 text-center font-semibold">
+            ☀️ ယနေ့ နေရာအခြေအနေ / Today's Sun Position
+          </p>
+
           <div
-            class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl text-center"
+            class="relative h-16 bg-gradient-to-r from-indigo-200 via-yellow-100 to-orange-300 rounded-full overflow-hidden shadow-inner"
           >
-            <div class="text-3xl mb-2">🌧️</div>
-            <p class="text-sm text-gray-600">မိုးရွာသည်</p>
-            <p class="text-2xl font-bold text-gray-800">
-              {{ weather.current.precipitation }} mm
-            </p>
+            <!-- Timeline markers -->
+            <div
+              class="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-indigo-300 to-transparent"
+            ></div>
+            <div
+              class="absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-purple-400 to-transparent"
+            ></div>
+
+            <!-- Sun position -->
+            <div
+              id="sunPosition"
+              class="absolute top-1/2 text-4xl transition-all duration-1000 ease-out"
+              style="left: 0%; transform: translate(-50%, -50%)"
+            >
+              ☀️
+            </div>
+          </div>
+
+          <div class="flex justify-between mt-3 px-2">
+            <div class="text-left">
+              <p class="text-xs text-gray-500">နေထွက်</p>
+              <p class="text-sm font-bold text-orange-600">
+                {{ sunrise_time }}
+              </p>
+            </div>
+            <div class="text-center">
+              <p class="text-xs text-gray-500">ယခုအချိန်</p>
+              <p class="text-sm font-bold text-gray-800" id="currentTime">
+                --:--
+              </p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-gray-500">နေဝင်</p>
+              <p class="text-sm font-bold text-purple-600">{{ sunset_time }}</p>
+            </div>
+          </div>
+        </div>
+
+        {% else %}
+        <p class="text-center text-gray-500">နေထွက်ချိန် ဒေတာ မရရှိပါ။</p>
+        {% endif %}
+      </div>
+
+      <!-- 🌙 Moon Phase Section -->
+      <div class="card moon-section mb-6 relative overflow-hidden">
+        <div class="stars-bg"></div>
+
+        <div class="relative z-10">
+          <!-- Header -->
+          <h2
+            class="text-2xl font-bold mb-6 flex items-center gap-2 text-white"
+          >
+            <span class="text-3xl">🌙</span>
+            <span>လပြည့်/လကွယ် အခြေအနေ</span>
+            <span class="text-sm font-normal text-gray-300 ml-2">
+              Moon Phase
+            </span>
+          </h2>
+
+          <!-- Today's Moon Phase - BIG DISPLAY -->
+          <div class="moon-card mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              <!-- Left: Big Moon -->
+              <div class="text-center">
+                <span class="moon-big-icon">{{ moon_emoji }}</span>
+                <p class="moon-name-mm">{{ moon_mm }}</p>
+                <p class="moon-name-en">{{ moon_en }}</p>
+                <p class="text-xs text-gray-400 mt-2">ယနေ့ / Today</p>
+              </div>
+
+              <!-- Right: Info -->
+              <div class="space-y-3">
+                <h3 class="font-bold text-lg mb-3 text-yellow-100">
+                  🌙 လအကြောင်း အချက်အလက်
+                </h3>
+
+                <div class="moon-info-card">
+                  <p class="moon-info-label">လကတစ်ပတ် ကြာချိန်</p>
+                  <p class="moon-info-text">
+                    ၂၉.၅၃ ရက် (၂၉ ရက် ၁၂ နာရီ ၄၄ မိနစ်)
+                  </p>
+                </div>
+
+                <div class="moon-info-card">
+                  <p class="moon-info-label">ယနေ့ လအခြေအနေ</p>
+                  <p class="moon-info-text">
+                    {% if moon_mm == 'လပြည့်' %} 🌕 လပြည့်နေ့ဖြစ်သည်။ ညဘက်တွင်
+                    လကို အပြည့်ကျယ်ဆုံး မြင်နိုင်သည်။ {% elif moon_mm == 'လကွယ်'
+                    %} 🌑 လကွယ်နေ့ဖြစ်သည်။ ညဘက်တွင် လကို မမြင်ရချေ။ {% elif
+                    'ပြန်' in moon_mm %} 🌒 လပြန်ချိန်ဖြစ်သည်။ လသည် တဖြည်းဖြည်း
+                    ပြန်လာနေသည်။ {% elif 'ဆုတ်' in moon_mm %} 🌘
+                    လဆုတ်ချိန်ဖြစ်သည်။ လသည် တဖြည်းဖြည်း ကွယ်လာနေသည်။ {% elif
+                    'ချိုး' in moon_mm %} 🌗 လတစ်ချိုးဖြစ်သည်။ လ၏ တစ်ဝက်ကိုသာ
+                    မြင်ရသည်။ {% else %} 🌙 လသည် ပုံမှန် အခြေအနေဖြစ်သည်။ {%
+                    endif %}
+                  </p>
+                </div>
+
+                <div class="moon-info-card">
+                  <p class="moon-info-label">လဆိုင်ရာ အကြံပြုချက်</p>
+                  <p class="moon-info-text">
+                    {% if 'ပြည့်' in moon_mm %} 🌕 လပြည့်ည - အပြင်ထွက်
+                    လှမ်းလျှင် ကောင်းသည် {% elif 'ကွယ်' in moon_mm %} 🌑 လကွယ်ည
+                    - ကြယ်များကို ကြည့်ရှုရန် အကောင်းဆုံးအချိန် {% else %} 🌙
+                    ညဘက် လှမ်းလျှင် လကို ခံစားနိုင်သည် {% endif %}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 7-Day Forecast -->
-      <div class="bg-white rounded-2xl shadow-2xl p-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">
-          📅 ၇ ရက်စာ ခန့်မှန်းချက်
+      <!-- 7-Day Forecast with Sunrise/Sunset -->
+      <div class="card mb-8">
+        <h2
+          class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2"
+        >
+          <span>📅</span>
+          <span>၇ ရက်စာ ခန့်မှန်းချက်</span>
         </h2>
-
         <div class="grid grid-cols-2 md:grid-cols-7 gap-3">
-          {% for day in weather.forecast %}
-          <div
-            class="bg-gradient-to-b from-blue-50 to-white p-4 rounded-xl text-center border border-blue-100"
-          >
-            <p class="font-bold text-gray-700">{{ day.date[:10] }}</p>
+          {% for day in weather.forecast %} {% set day_names = ['တနင်္ဂနွေ',
+          'တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ', 'စနေ'] %} {%
+          set sr = day.sunrise.split('T')[1] if day.sunrise else '--:--' %} {%
+          set ss = day.sunset.split('T')[1] if day.sunset else '--:--' %}
+
+          <div class="forecast-card">
+            <p class="font-bold text-gray-700 text-sm">
+              {{ day_names[loop.index0 % 7] }}
+            </p>
             <p class="text-xs text-gray-500 mb-2">
               {{ day.date[8:10] }}/{{ day.date[5:7] }}
             </p>
-            <div class="text-4xl my-2">{{ day.icon }}</div>
-            <p class="text-lg font-bold text-red-500">{{ day.temp_max }}°</p>
-            <p class="text-sm text-blue-500">{{ day.temp_min }}°</p>
+            <div class="text-3xl my-2">{{ day.icon }}</div>
+            <p class="temperature-max">{{ day.temp_max }}°</p>
+            <p class="temperature-min text-sm">{{ day.temp_min }}°</p>
             <p class="text-xs text-gray-600 mt-2">{{ day.description_mm }}</p>
-            <p class="text-xs text-blue-600 mt-1">
-              💧 {{ day.precipitation }}mm
-            </p>
+            <p class="text-xs text-blue-600">💧 {{ day.precipitation }}mm</p>
+
+            <!-- Sunrise/Sunset for each day -->
+            <div class="mt-3 pt-3 border-t border-blue-200 space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-orange-600">🌅</span>
+                <span class="font-mono font-bold text-orange-700"
+                  >{{ sr }}</span
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-purple-600">🌇</span>
+                <span class="font-mono font-bold text-purple-700"
+                  >{{ ss }}</span
+                >
+              </div>
+            </div>
           </div>
           {% endfor %}
         </div>
       </div>
 
       <!-- Other Cities -->
-      <div class="mt-8">
-        <h3 class="text-2xl font-bold text-white mb-4">🌏 တခြားမြို့များ</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {% for c in all_cities %} {% if c.name != weather.city %}
-          <a
-            href="/city/{{ c.name }}"
-            class="bg-white/90 hover:bg-white p-3 rounded-lg text-center transition shadow"
-          >
-            <p class="font-semibold text-gray-800">{{ c.name_mm }}</p>
-            <p class="text-xs text-gray-500">{{ c.name }}</p>
-          </a>
-          {% endif %} {% endfor %}
-        </div>
+      <h3 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+        <span>🌏</span>
+        <span>တခြားမြို့များ</span>
+      </h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-8">
+        {% for c in all_cities %} {% if c.name != weather.city %}
+        <a
+          href="/city/{{ c.name }}"
+          class="bg-white/90 hover:bg-white p-3 rounded-lg text-center transition shadow"
+        >
+          <p class="font-semibold text-gray-800">{{ c.name_mm }}</p>
+          <p class="text-xs text-gray-500">{{ c.name }}</p>
+        </a>
+        {% endif %} {% endfor %}
       </div>
     </div>
+
+    <!-- JavaScript for Sunrise/Sunset Calculations -->
+    <script>
+      // Calculate and display day length
+      document.addEventListener('DOMContentLoaded', () => {
+          {% if weather.forecast and weather.forecast|length > 0 %}
+          const today = {{ weather.forecast[0] | tojson }};
+
+          if (today && today.sunrise && today.sunset) {
+              const sunrise = new Date(today.sunrise);
+              const sunset = new Date(today.sunset);
+
+              // Calculate day length
+              const dayLengthMs = sunset - sunrise;
+              const hours = Math.floor(dayLengthMs / (1000 * 60 * 60));
+              const minutes = Math.floor((dayLengthMs % (1000 * 60 * 60)) / (1000 * 60));
+
+              // Display day length
+              document.getElementById('dayLength').textContent =
+                  `${hours}h ${minutes}m`;
+
+              // Compare to average (12 hours)
+              const avgDayLength = 12 * 60; // in minutes
+              const actualDayLength = hours * 60 + minutes;
+              const diffMinutes = actualDayLength - avgDayLength;
+
+              let comparisonText = '';
+              if (diffMinutes > 0) {
+                  comparisonText = `+${diffMinutes} min ပိုရှည်သည်`;
+              } else if (diffMinutes < 0) {
+                  comparisonText = `${Math.abs(diffMinutes)} min ပိုတိုသည်`;
+              } else {
+                  comparisonText = 'ပျမ်းမျှနှင့် တူညီသည်';
+              }
+
+              document.getElementById('dayLengthText').textContent = comparisonText;
+
+              // Update sun position
+              updateSunPosition(sunrise, sunset);
+
+              // Update current time
+              updateCurrentTime();
+              setInterval(updateCurrentTime, 60000); // Update every minute
+
+              // Update sun position every minute
+              setInterval(() => updateSunPosition(sunrise, sunset), 60000);
+          }
+          {% endif %}
+      });
+
+      function updateSunPosition(sunrise, sunset) {
+          const now = new Date();
+          const totalDay = sunset - sunrise;
+          const elapsed = now - sunrise;
+
+          let position = 0;
+
+          if (now < sunrise) {
+              position = 0;
+          } else if (now > sunset) {
+              position = 100;
+          } else {
+              position = (elapsed / totalDay) * 100;
+          }
+
+          // Animate sun arc
+          const sunEl = document.getElementById('sunPosition');
+          const arcHeight = Math.sin(position / 100 * Math.PI) * 40;
+
+          sunEl.style.left = `${position}%`;
+          sunEl.style.transform = `translate(-50%, calc(-50% - ${arcHeight}px))`;
+      }
+
+      function updateCurrentTime() {
+          const now = new Date();
+          const timeStr = now.toLocaleTimeString('my-MM', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+          });
+          document.getElementById('currentTime').textContent = timeStr;
+      }
+    </script>
   </body>
 </html>

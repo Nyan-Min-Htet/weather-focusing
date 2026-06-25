@@ -1,5 +1,4 @@
 import httpx
-import asyncio
 import time
 from datetime import datetime
 
@@ -112,5 +111,31 @@ class WeatherService:
                     "description_en": fc_desc_en,
                     "icon": fc_icon
                 })
-        
+                
         return result
+
+    @staticmethod
+    def get_moon_phase(date):
+        """Simple moon phase calculation"""
+        # Reference new moon: Jan 6, 2000
+        reference = datetime(2000, 1, 6)
+        days_since = (date - reference).days
+        cycle = 29.53059  # Lunar cycle in days
+        phase = (days_since % cycle) / cycle
+        
+        if phase < 0.03 or phase > 0.97:
+            return "🌑", "လကွယ်", "New Moon"
+        elif phase < 0.22:
+            return "🌒", "လကွယ်လပြန်", "Waxing Crescent"
+        elif phase < 0.28:
+            return "🌓", "လပြန်တစ်ချိုး", "First Quarter"
+        elif phase < 0.47:
+            return "🌔", "လပြန်ဝင်ဆန်း", "Waxing Gibbous"
+        elif phase < 0.53:
+            return "🌕", "လပြည့်", "Full Moon"
+        elif phase < 0.72:
+            return "🌖", "လဆုတ်ဝင်ဆန်း", "Waning Gibbous"
+        elif phase < 0.78:
+            return "🌗", "လဆုတ်တစ်ချိုး", "Last Quarter"
+        else:
+            return "🌘", "လဆုတ်လကွယ်", "Waning Crescent"
