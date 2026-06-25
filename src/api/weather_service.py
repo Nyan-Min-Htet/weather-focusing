@@ -1,6 +1,6 @@
 import httpx
 import time
-from datetime import datetime
+from datetime import date, datetime
 
 class WeatherService:
     BASE_URL = "https://api.open-meteo.com/v1/forecast"
