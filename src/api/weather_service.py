@@ -1,6 +1,3 @@
-from turtle import degrees
-from unittest import result
-
 import httpx
 import time
 from datetime import datetime
